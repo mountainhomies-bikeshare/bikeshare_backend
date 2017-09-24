@@ -58,14 +58,14 @@ def get_bike_recommendations():
 
     return jsonify(bikes)
 
-@app.route("/v1/rent_bike/<int:bike_id>", methods = ['GET'])
+@app.route("/v1/rent_bike/<string:bike_id>", methods = ['GET'])
 def rent_bike(bike_id):
     database.get_db().execute("UPDATE bikes SET is_on_loan = ? WHERE id = ?",
                                        (True, bike_id))
     database.get_db().commit()
     return response_success()
 
-@app.route("/v1/return_bike/<int:bike_id>", methods = ['GET'])
+@app.route("/v1/return_bike/<string:bike_id>", methods = ['GET'])
 def return_bike(bike_id):
     database.get_db().execute("UPDATE bikes SET is_on_loan = ? WHERE id = ?",
                                        (False, bike_id))
