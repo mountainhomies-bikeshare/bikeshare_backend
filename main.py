@@ -9,6 +9,10 @@ import uuid
 hypertrack.secret_key = secret.hypertrack_secret_key
 app = Flask(__name__)
 
+@app.cli.command('prod')
+def prod_command():
+    app.run(host='0.0.0.0')
+
 @app.cli.command('initdb')
 def initdb_command():
     def init_db():
