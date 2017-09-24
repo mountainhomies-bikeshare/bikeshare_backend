@@ -13,7 +13,8 @@ bikes = [
                 ]
             }
         },
-        'description': "Awesome blue mountain bike"
+        'description': "Awesome blue mountain bike",
+        'price': "$0.30"
     },
     {
         'id': 2,
@@ -29,7 +30,8 @@ bikes = [
                 ]
             }
         },
-        'description': "Fantastic Red Road bike"
+        'description': "Fantastic Red Road bike",
+        'price': "$0.20"
     },
     {
         'id': 3,
@@ -45,6 +47,7 @@ bikes = [
                 ]
             }
         },
-        'description': "Dynamic Green racing bike"
+        'description': "Dynamic Green racing bike",
+        'price': "$0.60"
     }
 ]
