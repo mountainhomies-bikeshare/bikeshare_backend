@@ -5,6 +5,7 @@ import secret
 import uuid
 import requests
 import json
+import constants
 
 # Initialization
 hypertrack.secret_key = secret.hypertrack_secret_key
@@ -62,6 +63,10 @@ def get_bike_recommendations():
     all_bikes = json.loads(all_bikes)
 
     return jsonify(all_bikes["results"][:3])
+
+@app.route("/v1/get_bike_recommendations_constants", methods=['GET'])
+def get_bike_recommendations_constants():
+    return jsonify(constants.bikes)
 
 @app.route("/v1/rent_bike/<string:bike_id>", methods = ['GET'])
 def rent_bike(bike_id):
