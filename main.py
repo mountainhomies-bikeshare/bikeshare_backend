@@ -69,6 +69,7 @@ def get_bike_recommendations():
 
     return jsonify(all_bikes["results"][:3])
 
+# For Demo
 @app.route("/v1/get_bike_recommendations_constants", methods=['GET'])
 def get_bike_recommendations_constants():
     return jsonify(constants.bikes)
