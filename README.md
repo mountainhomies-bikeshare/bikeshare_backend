@@ -11,6 +11,7 @@ Also, create an account with hypertrack, and use it in place of `secret.hypertra
 ### Flask
 ```commandline
 pip install Flask
+pip install -U flask-cors
 ```
 
 ## Quickstart
