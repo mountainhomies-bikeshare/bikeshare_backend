@@ -1,10 +1,30 @@
 import hypertrack
+from flask import Flask, jsonify, g
+from constants import bikes
+import database
 import secret
-from flask import Flask, jsonify, request, abort
-
 # Initialization
+
+
 hypertrack.secret_key = secret.hypertrack_secret_key
 app = Flask(__name__)
+
+@app.cli.command('initdb')
+def initdb_command():
+    def init_db():
+        db = database.get_db()
+        with app.open_resource('schema.sql', mode='r') as f:
+            db.cursor().executescript(f.read())
+        db.commit()
+    """Initializes the database."""
+    init_db()
+    print('Initialized the database.')
+
+@app.teardown_appcontext
+def close_db(error):
+    """Closes the database again at the end of the request."""
+    if hasattr(g, 'sqlite_db'):
+        g.sqlite_db.close()
 
 @app.route("/")
 def hello():
@@ -15,57 +35,6 @@ def hello():
     # )
     # print(hypertrack_bike)
     return "Hello World!"
-
-bikes = [
-    {
-        'id': 1,
-        'ownerid': 1,
-        'location': {
-            "type": "Feature",
-            "properties": {},
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    -122.09037780761719,
-                    37.384957792281945
-                ]
-            }
-        },
-        'description': "Awesome blue mountain bike"
-    },
-    {
-        'id': 2,
-        'ownerid': 2,
-        'location': {
-            "type": "Feature",
-            "properties": {},
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    -122.08874702453612,
-                    37.3928002484491
-                ]
-            }
-        },
-        'description': "Fantastic Red Road bike"
-    },
-    {
-        'id': 3,
-        'ownerid': 3,
-        'location': {
-            "type": "Feature",
-            "properties": {},
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    -122.10144996643066,
-                    37.38420760131265
-                ]
-            }
-        },
-        'description': "Dynamic Green racing bike"
-    }
-]
 
 
 @app.route("/v1/get_bike_recommendations", methods=['GET'])

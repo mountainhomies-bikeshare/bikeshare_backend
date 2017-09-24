@@ -16,5 +16,7 @@ pip install Flask
 ## Quickstart
 
 ```commandline
+# If running for the first time, initialize database
+FLASK_APP=main.py flask initdb
 FLASK_APP=main.py flask run
 ```
