@@ -92,30 +92,12 @@ def return_bike(bike_id):
 @app.route("/v1/list_all_accounts", methods=['GET'])
 def list_all_users():
     res = database.get_db().execute("SELECT * FROM accounts")
-    accounts = []
-    for row in res.fetchall():
-        account = {}
-        account["id"] = row[0]
-        account["name"] = row[1]
-        account["email"] = row[2]
-        account["phone"] = row[3]
-        accounts.append(account)
-    return jsonify(accounts)
+    return jsonify(res.fetchall())
 
 @app.route("/v1/list_all_bikes", methods=['GET'])
 def list_all_bikes():
     res = database.get_db().execute("SELECT * FROM bikes")
-    bikes = []
-    for row in res.fetchall():
-        bike = {}
-        bike["id"] = row[0]
-        bike["hypertrack_id"] = row[1]
-        bike["account_id"] = row[2]
-        bike["description"] = row[3]
-        bike["is_on_loan"] = row[4]
-        bike["loan_account_id"] = row[5]
-        bikes.append(bike)
-    return jsonify(bikes)
+    return jsonify(res.fetchall())
 
 
 ##############
