@@ -6,10 +6,12 @@ import uuid
 import requests
 import json
 import constants
+from flask_cors import CORS
 
 # Initialization
 hypertrack.secret_key = secret.hypertrack_secret_key
 app = Flask(__name__)
+CORS(app)
 
 @app.cli.command('prod')
 def prod_command():
