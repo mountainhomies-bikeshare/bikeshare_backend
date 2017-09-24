@@ -1,11 +1,11 @@
 import hypertrack
-from flask import Flask, jsonify, g
+from flask import Flask, jsonify, g, request
 from constants import bikes
 import database
 import secret
+import uuid
+
 # Initialization
-
-
 hypertrack.secret_key = secret.hypertrack_secret_key
 app = Flask(__name__)
 
@@ -26,19 +26,85 @@ def close_db(error):
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
 
-@app.route("/")
-def hello():
-    # hypertrack_bike = hypertrack.User.create(
-    #     name='Bike1',
-    #     email='john@example.com',
-    #     phone='+15555555555',
-    # )
-    # print(hypertrack_bike)
-    return "Hello World!"
 
+####################
+### MAIN METHODS ###
+####################
+
+@app.route("/v1/register_account", methods=['POST'])
+def register_account():
+    id = str(uuid.uuid4())
+    database.get_db().execute("INSERT INTO accounts VALUES (?, ?, ?, ?)",
+                              (id, request.json["name"], request.json["email"], request.json["phone"]))
+    database.get_db().commit()
+    return jsonify({"id": id})
+
+@app.route("/v1/register_bike", methods=['POST'])
+def register_bike():
+    id = str(uuid.uuid4())
+    database.get_db().execute("INSERT INTO bikes VALUES (?, ?, ?, ?, ?, ?)",
+                                       (id, request.json["hypertrack_id"], request.json["account_id"], request.json["description"], False, None, ))
+    database.get_db().commit()
+    return jsonify({"id": id})
 
 @app.route("/v1/get_bike_recommendations", methods=['GET'])
 def get_bike_recommendations():
     # if not request.args or not request.args.get("user") or not request.args.get("location") or not request.args.get("destination"):
     #     abort(400)
+
     return jsonify(bikes)
+
+@app.route("/v1/rent_bike/<int:bike_id>", methods = ['GET'])
+def rent_bike(bike_id):
+    database.get_db().execute("UPDATE bikes SET is_on_loan = ? WHERE id = ?",
+                                       (True, bike_id))
+    database.get_db().commit()
+    return response_success()
+
+@app.route("/v1/return_bike/<int:bike_id>", methods = ['GET'])
+def return_bike(bike_id):
+    database.get_db().execute("UPDATE bikes SET is_on_loan = ? WHERE id = ?",
+                                       (False, bike_id))
+    database.get_db().commit()
+    return response_success()
+
+
+#################
+### DEBUGGING ###
+#################
+
+@app.route("/v1/list_all_accounts", methods=['GET'])
+def list_all_users():
+    res = database.get_db().execute("SELECT * FROM accounts")
+    accounts = []
+    for row in res.fetchall():
+        account = {}
+        account["id"] = row[0]
+        account["name"] = row[1]
+        account["email"] = row[2]
+        account["phone"] = row[3]
+        accounts.append(account)
+    return jsonify(accounts)
+
+@app.route("/v1/list_all_bikes", methods=['GET'])
+def list_all_bikes():
+    res = database.get_db().execute("SELECT * FROM bikes")
+    bikes = []
+    for row in res.fetchall():
+        bike = {}
+        bike["id"] = row[0]
+        bike["hypertrack_id"] = row[1]
+        bike["account_id"] = row[2]
+        bike["description"] = row[3]
+        bike["is_on_loan"] = row[4]
+        bike["loan_account_id"] = row[5]
+        bikes.append(bike)
+    return jsonify(bikes)
+
+
+##############
+### HELPER ###
+##############
+
+def response_success():
+    return jsonify({"status": 0})
