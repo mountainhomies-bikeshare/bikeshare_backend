@@ -1,9 +1,10 @@
 import hypertrack
 from flask import Flask, jsonify, g, request
-from constants import bikes
 import database
 import secret
 import uuid
+import requests
+import json
 
 # Initialization
 hypertrack.secret_key = secret.hypertrack_secret_key
@@ -51,12 +52,16 @@ def register_bike():
     database.get_db().commit()
     return jsonify({"id": id})
 
-@app.route("/v1/get_bike_recommendations", methods=['GET'])
+@app.route("/v1/get_bike_recommendations", methods=['POST'])
 def get_bike_recommendations():
     # if not request.args or not request.args.get("user") or not request.args.get("location") or not request.args.get("destination"):
     #     abort(400)
+    headers = {"Authorization": "token " + secret.hypertrack_secret_key}
+    all_bikes = requests.get('https://api.hypertrack.com/api/v1/users/nearby/?location=' + str(request.json["coordinates"][0])
+                       + "," + str(request.json["coordinates"][1]), headers=headers).content
+    all_bikes = json.loads(all_bikes)
 
-    return jsonify(bikes)
+    return jsonify(all_bikes["results"][:3])
 
 @app.route("/v1/rent_bike/<string:bike_id>", methods = ['GET'])
 def rent_bike(bike_id):
