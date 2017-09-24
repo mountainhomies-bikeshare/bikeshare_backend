@@ -7,11 +7,13 @@ CREATE TABLE accounts (
 
 CREATE TABLE bikes (
   id text PRIMARY KEY,
-  hypertrack_id text,
+  ht_id text,
   account_id text,
   description text,
   is_on_loan boolean,
   loan_account_id text,
+  price text,
+  deadline text,
   FOREIGN KEY (account_id)
     REFERENCES accounts(id)
     ON DELETE CASCADE,

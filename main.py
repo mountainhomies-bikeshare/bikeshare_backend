@@ -49,9 +49,10 @@ def register_account():
 
 @app.route("/v1/register_bike", methods=['POST'])
 def register_bike():
-    id = str(uuid.uuid4())
-    database.get_db().execute("INSERT INTO bikes VALUES (?, ?, ?, ?, ?, ?)",
-                                       (id, request.json["hypertrack_id"], request.json["account_id"], request.json["description"], False, None, ))
+    id = str(uuid.uuid4()) if "id" not in request.json else request.json["id"]
+    database.get_db().execute("INSERT INTO bikes VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                                       (id, request.json["ht_id"], request.json["account_id"], request.json["description"],
+                                        False, None, request.json["price"], request.json["deadline"]))
     database.get_db().commit()
     return jsonify({"id": id})
 
