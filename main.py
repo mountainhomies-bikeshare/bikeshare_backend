@@ -50,9 +50,11 @@ def register_account():
 @app.route("/v1/register_bike", methods=['POST'])
 def register_bike():
     id = str(uuid.uuid4()) if "id" not in request.json else request.json["id"]
+    is_on_loan = False if "is_on_loan" not in request.json else request.json["is_on_loan"]
+    loan_account_id = None if "loan_account_id" not in request.json else request.json["loan_account_id"]
     database.get_db().execute("INSERT INTO bikes VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                                        (id, request.json["ht_id"], request.json["account_id"], request.json["description"],
-                                        False, None, request.json["price"], request.json["deadline"]))
+                                        is_on_loan, loan_account_id, request.json["price"], request.json["deadline"]))
     database.get_db().commit()
     return jsonify({"id": id})
 
